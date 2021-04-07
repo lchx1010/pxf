@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -120,7 +121,7 @@ public class AvroResolverTest {
         List<OneField> fields = new ArrayList<>();
         fields.add(new OneField(DataType.BYTEA.getOID(), new byte[]{65, 66, 67, 68}));               // union of null and bytes
         fields.add(new OneField(DataType.TEXT.getOID(), "{float:7.7,int:7,string:seven}"));      // record (composite type)
-        fields.add(new OneField(DataType.TEXT.getOID(), "[one,two,three]"));                     // array
+        fields.add(new OneField(DataType.TEXT.getOID(), "{one,two,three}"));                     // array
         fields.add(new OneField(DataType.TEXT.getOID(), "DIAMONDS"));                            // enum
         fields.add(new OneField(DataType.BYTEA.getOID(), new byte[]{'F', 'O', 'O', 'B', 'A', 'R'})); // fixed length bytes
         fields.add(new OneField(DataType.TEXT.getOID(), "{key1:123456789,key2:234567890}"));     // map of string to long
@@ -135,7 +136,7 @@ public class AvroResolverTest {
         // assert column values
         assertEquals(ByteBuffer.wrap(new byte[]{65, 66, 67, 68}), genericRecord.get(0));
         assertEquals("{float:7.7,int:7,string:seven}", genericRecord.get(1));
-        assertEquals("[one,two,three]", genericRecord.get(2));
+        assertEquals(Arrays.asList("one", "two", "three"), genericRecord.get(2));
         assertEquals("DIAMONDS", genericRecord.get(3));
         assertEquals(ByteBuffer.wrap(new byte[]{'F', 'O', 'O', 'B', 'A', 'R'}), genericRecord.get(4));
         assertEquals("{key1:123456789,key2:234567890}", genericRecord.get(5));

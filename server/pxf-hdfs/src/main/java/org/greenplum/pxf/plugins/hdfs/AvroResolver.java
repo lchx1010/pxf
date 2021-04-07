@@ -36,6 +36,7 @@ import org.greenplum.pxf.api.model.BasePlugin;
 import org.greenplum.pxf.api.model.Resolver;
 import org.greenplum.pxf.api.utilities.SpringContext;
 import org.greenplum.pxf.plugins.hdfs.avro.AvroUtilities;
+import org.greenplum.pxf.plugins.hdfs.utilities.FormatHandlerUtil;
 import org.greenplum.pxf.plugins.hdfs.utilities.HdfsUtilities;
 import org.greenplum.pxf.plugins.hdfs.utilities.RecordkeyAdapter;
 
@@ -147,6 +148,25 @@ public class AvroResolver extends BasePlugin implements Resolver {
             } else if (field.type == DataType.SMALLINT.getOID()) {
                 // Avro doesn't have a short, just an int type
                 field.val = field.val != null ? (int) (short) field.val : null;
+            } else if (field.type == DataType.TEXT.getOID()) {
+                // FIXME: do not hard-code the delimiter here
+                // in gphdfs, the column delimiter was read from the input stream
+                // in AvroFileWriter, this is read from a schema-head block
+                // in gphdfsprotocol_export, the postgres function `get_type_io_data` is called to determine
+                // what the delimiter character is for the type.
+                // -OR-
+                // Just hard-code it to `,` and don't allow `box`
+                // gpadmin=# select typdelim, count(*) from pg_type group by typdelim;
+                //  typdelim | count
+                // ----------+-------
+                //  ,        |   444
+                //  ;        |     2
+                // gpadmin=# select typname from pg_type where typdelim = ';';
+                //  typname
+                // ---------
+                //  box
+                //  _box
+                field.val = FormatHandlerUtil.decodeString(schema.getFields().get(cnt).schema(), (String) field.val, true, ',');
             }
             genericRecord.put(cnt++, field.val);
         }
