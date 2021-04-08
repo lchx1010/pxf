@@ -218,12 +218,14 @@ public class AvroResolver extends BasePlugin implements Resolver {
 
         switch (fieldType) {
             case ARRAY:
+                DataType type = resolvePostgresArrayType(fieldSchema);
+
                 if (fieldValue == null) {
-                    return addOneFieldToRecord(record, DataType.TEXT, null);
+                    return addOneFieldToRecord(record, type, null);
                 }
                 List<OneField> listRecord = new LinkedList<>();
                 ret = setArrayField(listRecord, fieldValue, fieldSchema);
-                addOneFieldToRecord(record, DataType.TEXT, String.format("[%s]",
+                addOneFieldToRecord(record, type, String.format("{%s}",
                         HdfsUtilities.toString(listRecord, collectionDelim)));
                 break;
             case MAP:
@@ -409,5 +411,41 @@ public class AvroResolver extends BasePlugin implements Resolver {
 
         record.add(oneField);
         return 1;
+    }
+
+    DataType resolvePostgresArrayType(Schema schema) {
+        DataType type;
+        switch(schema.getType()) {
+            case ARRAY:
+                Schema nestedSchema = FormatHandlerUtil.firstNotNullSchema(schema.getTypes());
+                type = resolvePostgresArrayType(nestedSchema);
+                break;
+            case BYTES:
+            case FIXED:
+                type = DataType.INT2ARRAY;
+                break;
+            case INT:
+                type = DataType.INT4ARRAY;
+                break;
+            case LONG:
+                type = DataType.INT8ARRAY;
+                break;
+            case FLOAT:
+                type = DataType.FLOAT4ARRAY;
+                break;
+            case DOUBLE:
+                type = DataType.FLOAT8ARRAY;
+                break;
+            case BOOLEAN:
+                type = DataType.BOOLARRAY;
+                break;
+            case ENUM:
+            case STRING:
+                type = DataType.TEXTARRAY;
+                break;
+            default:
+                type = DataType.UNSUPPORTED_TYPE;
+        }
+        return type;
     }
 }
