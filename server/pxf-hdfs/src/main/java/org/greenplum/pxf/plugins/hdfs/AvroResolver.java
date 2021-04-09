@@ -417,8 +417,12 @@ public class AvroResolver extends BasePlugin implements Resolver {
         DataType type;
         switch(schema.getType()) {
             case ARRAY:
-                Schema nestedSchema = FormatHandlerUtil.firstNotNullSchema(schema.getTypes());
-                type = resolvePostgresArrayType(nestedSchema);
+                Schema arraySchema = schema.getElementType();
+                type = resolvePostgresArrayType(arraySchema);
+                break;
+            case UNION:
+                Schema unionSchema = FormatHandlerUtil.firstNotNullSchema(schema.getTypes());
+                type = resolvePostgresArrayType(unionSchema);
                 break;
             case BYTES:
             case FIXED:
