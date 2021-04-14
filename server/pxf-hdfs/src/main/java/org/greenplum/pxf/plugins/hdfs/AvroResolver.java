@@ -426,7 +426,7 @@ public class AvroResolver extends BasePlugin implements Resolver {
                 break;
             case BYTES:
             case FIXED:
-                type = DataType.INT2ARRAY;
+                type = DataType.BYTEAARRAY;
                 break;
             case INT:
                 type = DataType.INT4ARRAY;

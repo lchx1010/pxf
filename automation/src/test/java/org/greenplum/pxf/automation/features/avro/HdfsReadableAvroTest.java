@@ -105,12 +105,12 @@ public class HdfsReadableAvroTest extends BaseFeature {
     }
 
     /**
-     * Read an Avro file that includes all supported array types.
+     * Read an Avro file that includes all supported array types as text.
      *
      * @throws Exception
      */
     @Test(groups = {"features", "gpdb", "hcfs", "security"})
-    public void avroArrays() throws Exception {
+    public void avroArraysAsText() throws Exception {
         prepareReadableTable("avrotest_arrays", new String[]{
                 "type_int int",
                 "type_int_array text",
@@ -129,6 +129,33 @@ public class HdfsReadableAvroTest extends BaseFeature {
         gpdb.createTableAndVerify(exTable);
         // Verify results
         runTincTest("pxf.features.hdfs.readable.avro.array_types.runTest");
+    }
+
+    /**
+     * Read an Avro file that includes all supported array types as gpdb arrays.
+     *
+     * @throws Exception
+     */
+    @Test(groups = {"features", "gpdb", "hcfs", "security"})
+    public void avroArraysAsGPDBArrays() throws Exception {
+        prepareReadableTable("avrotest_arrays_gpdb_arrays", new String[]{
+                "type_int int",
+                "type_int_array int[]",
+                "type_double float8",
+                "type_double_array float8[]",
+                "type_string text",
+                "type_string_array text[]",
+                "type_float real",
+                "type_float_array real[]",
+                "type_long bigint",
+                "type_long_array bigint[]",
+                "type_bytes bytea",
+                "type_bytes_array bytea[]",
+                "type_boolean bool",
+                "type_boolean_array bool[]",}, hdfsPath + avroArrayFileName + SUFFIX_AVRO);
+        gpdb.createTableAndVerify(exTable);
+        // Verify results
+        runTincTest("pxf.features.hdfs.readable.avro.array_types_gpdb.runTest");
     }
 
     /**

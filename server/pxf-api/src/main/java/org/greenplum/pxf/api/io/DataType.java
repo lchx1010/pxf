@@ -54,6 +54,7 @@ public enum DataType {
     TEXTARRAY(1009),
     FLOAT4ARRAY(1021),
     FLOAT8ARRAY(1022),
+    BYTEAARRAY(1001),
 
     UNSUPPORTED_TYPE(-1);
 
@@ -68,6 +69,9 @@ public enum DataType {
         INT8ARRAY.typeElem = BIGINT;
         BOOLARRAY.typeElem = BOOLEAN;
         TEXTARRAY.typeElem = TEXT;
+        FLOAT4ARRAY.typeElem = REAL;
+        FLOAT8ARRAY.typeElem = FLOAT8;
+        BYTEAARRAY.typeElem = BYTEA;
 
         DataType[] allTypes = DataType.values();
         OID_ARRAY = new int[allTypes.length];
