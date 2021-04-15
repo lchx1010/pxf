@@ -23,6 +23,12 @@ export GPHOME=<your gphome>
 export PXF_HOME=/usr/local/pxf
 ```
 
+If you did not install the PXF client to the psql template, then you need to manually install the PXF extension to both `pxfautomation` and `pxfautomation_encoding`; 
+Or, you can install the PXF client to the psql template using:
+```bash
+psql -d template1 -c "create extension pxf"
+```
+
 Run all tests for GPDB
 ```
 make GROUP=gpdb
@@ -47,6 +53,10 @@ If you wish to run with cache
 ```
 make OFFLINE=true
 ```
+
+Note: if you get an error saying that the jar does not exist, ensure that you have
+a) installed the PXF server, and
+b) only have 1 jar file inside `/usr/local/pxf/application/`
 
 ### Project structure
 _**src/main/java**_ - contains related classes and utilities for the test
