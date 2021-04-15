@@ -76,6 +76,18 @@ public class HdfsWritableAvroTest extends BaseFeature {
             "type_timestamp TEXT",
             "type_timestampz TEXT"
     };
+    private static final String[] AVRO_COMPLEX_TABLE_COLS_W_ARRAYS_READABLE = new String[]{
+            "type_int int",
+            "type_record TEXT",
+            "type_enum_mood TEXT",
+            "type_long_array BIGINT[]",
+            "type_numeric_array NUMERIC(8,1)[]",
+            "type_string_array TEXT[]",
+            "type_date TEXT",
+            "type_time TEXT",
+            "type_timestamp TEXT",
+            "type_timestampz TEXT"
+    };
     private String gpdbTable;
     private String hdfsPath;
     private String publicStage;
@@ -248,7 +260,7 @@ public class HdfsWritableAvroTest extends BaseFeature {
                 fullTestPath);
 
         prepareReadableExternalTable(gpdbTable,
-                AVRO_COMPLEX_TABLE_COLS_READABLE,
+                AVRO_COMPLEX_TABLE_COLS_W_ARRAYS_READABLE,
                 fullTestPath);
         gpdb.createTableAndVerify(readableExternalTable);
 
@@ -274,7 +286,7 @@ public class HdfsWritableAvroTest extends BaseFeature {
         fetchAndVerifyAvroHcfsFiles("complex_no_union_with_arrays.json", "deflate");
 
         // check using GPDB readable external table that what went into HCFS is correct
-        runTincTest("pxf.features.hdfs.writable.avro.complex_user_provided_schema_on_classpath.runTest");
+        runTincTest("pxf.features.hdfs.writable.avro.complex_user_provided_schema_w_arrays_on_classpath.runTest");
     }
 
     @Test(groups = {"features", "gpdb", "hcfs", "security"})
