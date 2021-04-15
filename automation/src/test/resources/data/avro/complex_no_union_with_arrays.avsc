@@ -1,0 +1,47 @@
+{
+  "type" : "record",
+  "name" : "testTableName",
+  "namespace" : "com.example",
+  "doc" : "",
+  "fields" : [ {
+    "name" : "type_int",
+    "type" : "int",
+    "doc" : "int type"
+  }, {
+    "name" : "type_record",
+    "type" : "string",
+    "doc" : "record type"
+  }, {
+    "name" : "type_enum_mood",
+    "type" : "string",
+    "doc" : "mood enum type"
+  }, {
+    "name" : "type_long_array",
+    "type" : {"type": "array", "items": "long"},
+    "doc" : "long array type"
+  }, {
+    "name" : "type_numeric_array",
+    "type" : {"type": "array", "items": "double"},
+    "doc" : "numeric array type"
+  }, {
+    "name" : "type_string_array",
+    "type" : {"type": "array", "items": "string"},
+    "doc" : "string array type"
+  }, {
+    "name" : "type_date",
+    "type" : "string",
+    "doc" : "date string type"
+  }, {
+    "name" : "type_time",
+    "type" : "string",
+    "doc" : "time string type"
+  }, {
+    "name" : "type_timestamp",
+    "type" : "string",
+    "doc" : "timestamp string type"
+  }, {
+    "name" : "type_timestampz",
+    "type" : "string",
+    "doc" : "timestamp with time zone string type"
+  } ]
+}
