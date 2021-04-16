@@ -1,7 +1,7 @@
 from mpp.models import SQLTestCase
 from mpp.models import SQLConcurrencyTestCase
 
-class PxfHdfsAvroWritableUserProvidedSchemaWithArraysOnHcfs(SQLConcurrencyTestCase):
+class PxfHdfsAvroWritableUserProvidedSchemaWithNullArraysOnHcfs(SQLConcurrencyTestCase):
     """
     @db_name pxfautomation
     @concurrency 1

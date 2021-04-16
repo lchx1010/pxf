@@ -1,4 +1,4 @@
--- @description query01 for PXF HDFS Writable Avro with user-provided schema on Classpath, complex types
+-- @description query01 for PXF HDFS Writable Avro with user-provided schema on Classpath, complex types with arrays
 
 -- start_matchsubs
 --
