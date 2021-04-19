@@ -5,7 +5,7 @@
 -- # create a match/subs
 --
 -- end_matchsubs
-SELECT * from writable_avro_array_user_schema_w_nulls_on_classpath_readable ORDER BY type_int;
+SELECT * from writable_avro_array_user_schema_w_nulls_readable ORDER BY type_int;
  type_int | type_long_array |    type_numeric_array     |          type_string_array
 ----------+-----------------+---------------------------+--------------------------------------
         1 | {1,10,100}      | {1.0,100.0,10000.0}       | {"item 0","item 10","item 20"}
