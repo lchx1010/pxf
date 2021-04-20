@@ -241,7 +241,7 @@ public class AvroResolverTest {
 
         assertField(fields, 0, new byte[]{'A', 'B', 'C', 'D'}, DataType.BYTEA); // union of null and bytes
         assertField(fields, 1, "{float:7.7,int:7,string:seven}", DataType.TEXT); // record
-        assertField(fields, 2, "[one,two,three]", DataType.TEXT); // array
+        assertField(fields, 2, "{one,two,three}", DataType.TEXTARRAY); // array
         assertField(fields, 3, "DIAMONDS", DataType.TEXT); // enum
         assertField(fields, 4, new byte[]{'F', 'O', 'O', 'B', 'A', 'R'}, DataType.BYTEA); // fixed length bytes
         assertField(fields, 5, "{key1:123456789,key2:234567890}", DataType.TEXT); // map of string to long
@@ -275,7 +275,7 @@ public class AvroResolverTest {
         List<OneField> fields = resolver.getFields(new OneRow(null, genericRecord));
         assertField(fields, 0, null, DataType.BYTEA);
         assertField(fields, 1, null, DataType.TEXT);
-        assertField(fields, 2, null, DataType.TEXT);
+        assertField(fields, 2, null, DataType.TEXTARRAY);
         assertField(fields, 3, null, DataType.TEXT);
         assertField(fields, 4, null, DataType.BYTEA);
         assertField(fields, 5, null, DataType.TEXT);
