@@ -284,17 +284,6 @@ public class BridgeOutputBuilder {
         // schema from GPDB table
         DataType dtSchema = DataType.get(schemaType);
 
-        if (!dtSchema.isBinaryFormatType()) {
-            return dtRec == DataType.TEXT;
-        } else {
-            return dtSchema == DataType.UNSUPPORTED_TYPE || dtSchema == dtRec;
-        }
-
-        // gpdb schema = text
-        // avro = array
-
-        // gpdb schema = array
-        // avro = array
         return (dtSchema == DataType.UNSUPPORTED_TYPE || dtRec == dtSchema || (isStringType(dtRec) && isStringType(dtSchema)));
     }
 

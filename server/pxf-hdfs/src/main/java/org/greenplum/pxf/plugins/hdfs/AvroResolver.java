@@ -34,6 +34,7 @@ import org.greenplum.pxf.api.OneRow;
 import org.greenplum.pxf.api.io.DataType;
 import org.greenplum.pxf.api.model.BasePlugin;
 import org.greenplum.pxf.api.model.Resolver;
+import org.greenplum.pxf.api.utilities.ColumnDescriptor;
 import org.greenplum.pxf.api.utilities.SpringContext;
 import org.greenplum.pxf.plugins.hdfs.avro.AvroUtilities;
 import org.greenplum.pxf.plugins.hdfs.utilities.FormatHandlerUtil;
@@ -122,8 +123,11 @@ public class AvroResolver extends BasePlugin implements Resolver {
                         context, row);
             }
 
+            // TODO: should we be double checking this is the correct column
+            ColumnDescriptor col = context.getTupleDescription();
+            DataType gpdbSchema = context.getColumn(currentIndex).getDataType();
             currentIndex += populateRecord(record,
-                    avroRecord.get(field.name()), field.schema());
+                    avroRecord.get(field.name()), field.schema(), gpdbSchema);
         }
         return record;
     }
@@ -211,21 +215,30 @@ public class AvroResolver extends BasePlugin implements Resolver {
      * @return the number of populated fields
      */
     int populateRecord(List<OneField> record, Object fieldValue,
-                       Schema fieldSchema) {
+                       Schema fieldSchema, DataType gpdbColType) {
 
         Schema.Type fieldType = fieldSchema.getType();
         int ret = 0;
 
         switch (fieldType) {
             case ARRAY:
-                DataType type = resolvePostgresArrayType(fieldSchema);
-
                 if (fieldValue == null) {
-                    return addOneFieldToRecord(record, type, null);
+                    return addOneFieldToRecord(record, gpdbColType, null);
                 }
                 List<OneField> listRecord = new LinkedList<>();
-                ret = setArrayField(listRecord, fieldValue, fieldSchema);
-                addOneFieldToRecord(record, type, String.format("{%s}",
+                ret = setArrayField(listRecord, fieldValue, fieldSchema, gpdbColType);
+                DataType type;
+                String formatType;
+
+                if (DataType.isArrayType(gpdbColType.getOID())) {
+                    type = gpdbColType;
+                    formatType = "{%s}";
+                } else {
+                    type = DataType.TEXT;
+                    formatType = "[%]";
+                }
+
+                addOneFieldToRecord(record, type, String.format(formatType,
                         HdfsUtilities.toString(listRecord, collectionDelim)));
                 break;
             case MAP:
@@ -261,7 +274,7 @@ public class AvroResolver extends BasePlugin implements Resolver {
                 if (fieldValue == null) {
                     unionIndex ^= 1; // exclusive or assignment
                 }
-                ret = populateRecord(record, fieldValue, fieldSchema.getTypes().get(unionIndex));
+                ret = populateRecord(record, fieldValue, fieldSchema.getTypes().get(unionIndex), gpdbColType);
                 break;
             case ENUM:
                 ret = addOneFieldToRecord(record, DataType.TEXT, fieldValue);
@@ -316,8 +329,8 @@ public class AvroResolver extends BasePlugin implements Resolver {
             Schema fieldSchema = field.schema();
             Object fieldValue = rec.get(field.name());
             List<OneField> complexRecord = new LinkedList<>();
-            populateRecord(complexRecord, field.name(), fieldKeySchema);
-            populateRecord(complexRecord, fieldValue, fieldSchema);
+            populateRecord(complexRecord, field.name(), fieldKeySchema, DataType.TEXT);
+            populateRecord(complexRecord, fieldValue, fieldSchema, DataType.TEXT);
             addOneFieldToRecord(record, DataType.TEXT,
                     HdfsUtilities.toString(complexRecord, recordkeyDelim));
             currentIndex++;
@@ -346,8 +359,8 @@ public class AvroResolver extends BasePlugin implements Resolver {
         Map<String, ?> avroMap = ((Map<String, ?>) fieldValue);
         for (Map.Entry<String, ?> entry : avroMap.entrySet()) {
             List<OneField> complexRecord = new LinkedList<>();
-            populateRecord(complexRecord, entry.getKey(), keySchema);
-            populateRecord(complexRecord, entry.getValue(), valueSchema);
+            populateRecord(complexRecord, entry.getKey(), keySchema, DataType.TEXT);
+            populateRecord(complexRecord, entry.getValue(), valueSchema, DataType.TEXT);
             addOneFieldToRecord(record, DataType.TEXT,
                     HdfsUtilities.toString(complexRecord, mapkeyDelim));
         }
@@ -365,12 +378,12 @@ public class AvroResolver extends BasePlugin implements Resolver {
      * @return number of populated fields
      */
     int setArrayField(List<OneField> record, Object fieldValue,
-                      Schema arraySchema) {
+                      Schema arraySchema, DataType gpdbColType) {
         Schema typeSchema = arraySchema.getElementType();
         GenericData.Array<?> array = (GenericData.Array<?>) fieldValue;
         int length = array.size();
         for (Object o : array) {
-            populateRecord(record, o, typeSchema);
+            populateRecord(record, o, typeSchema, gpdbColType);
         }
         return length;
     }
@@ -448,7 +461,8 @@ public class AvroResolver extends BasePlugin implements Resolver {
                 type = DataType.TEXTARRAY;
                 break;
             default:
-                type = DataType.UNSUPPORTED_TYPE;
+                // for any other complex array types (like struct arrays or arrays of ints + strings)
+                type = DataType.TEXTARRAY;
         }
         return type;
     }

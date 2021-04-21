@@ -24,6 +24,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Component
@@ -153,6 +154,21 @@ public final class AvroUtilities {
             case FLOAT8:
                 unionList.add(Schema.create(Schema.Type.DOUBLE));
                 break;
+            case BOOLARRAY:
+                unionList.add(createArraySchema(Schema.Type.BOOLEAN));
+            case BYTEAARRAY:
+                unionList.add(createArraySchema(Schema.Type.BYTES));
+            case INT2ARRAY:
+            case INT4ARRAY:
+                unionList.add(createArraySchema(Schema.Type.INT));
+            case INT8ARRAY:
+                unionList.add(createArraySchema(Schema.Type.LONG));
+            case FLOAT4ARRAY:
+                unionList.add(createArraySchema(Schema.Type.FLOAT));
+            case FLOAT8ARRAY:
+                unionList.add(createArraySchema(Schema.Type.DOUBLE));
+            case TEXTARRAY:
+                unionList.add(createArraySchema(Schema.Type.STRING));
             default:
                 unionList.add(Schema.create(Schema.Type.STRING));
                 break;
@@ -161,6 +177,10 @@ public final class AvroUtilities {
         return Schema.createUnion(unionList);
     }
 
+    private Schema createArraySchema(Schema.Type arrayElemType) {
+        return Schema.createArray(Schema.createUnion(
+                Arrays.asList(Schema.create(Schema.Type.NULL), Schema.create(arrayElemType))));
+    }
     private static class DefaultFileSearcher implements FileSearcher {
 
         @Override
