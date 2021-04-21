@@ -156,19 +156,26 @@ public final class AvroUtilities {
                 break;
             case BOOLARRAY:
                 unionList.add(createArraySchema(Schema.Type.BOOLEAN));
+                break;
             case BYTEAARRAY:
                 unionList.add(createArraySchema(Schema.Type.BYTES));
+                break;
             case INT2ARRAY:
             case INT4ARRAY:
                 unionList.add(createArraySchema(Schema.Type.INT));
+                break;
             case INT8ARRAY:
                 unionList.add(createArraySchema(Schema.Type.LONG));
+                break;
             case FLOAT4ARRAY:
                 unionList.add(createArraySchema(Schema.Type.FLOAT));
+                break;
             case FLOAT8ARRAY:
                 unionList.add(createArraySchema(Schema.Type.DOUBLE));
+                break;
             case TEXTARRAY:
                 unionList.add(createArraySchema(Schema.Type.STRING));
+                break;
             default:
                 unionList.add(Schema.create(Schema.Type.STRING));
                 break;

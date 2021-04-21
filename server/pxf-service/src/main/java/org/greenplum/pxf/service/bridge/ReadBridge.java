@@ -63,7 +63,7 @@ public class ReadBridge extends BaseBridge {
     }
 
     protected Deque<Writable> makeOutput(OneRow oneRow) throws Exception {
-        return outputBuilder.makeOutput(resolver.getFields(oneRow, schema));
+        return outputBuilder.makeOutput(resolver.getFields(oneRow));
     }
 
     /**

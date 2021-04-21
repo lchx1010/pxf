@@ -432,25 +432,19 @@ public class BridgeOutputBuilder {
                 case NUMERIC:
                 case TIMESTAMP:
                 case DATE:
+                case BOOLARRAY:
+                case BYTEAARRAY:
+                case INT2ARRAY:
+                case INT4ARRAY:
+                case INT8ARRAY:
+                case FLOAT4ARRAY:
+                case FLOAT8ARRAY:
+                case TEXTARRAY:
                     String objString = ObjectUtils.toString(val, null);
                     LOG.info("object string is: {}", objString);
                     gpdbOutput.setString(colIdx, objString);
                     break;
-                case INT4ARRAY:
-                    LOG.info("WE ARE AN ARRAY TYPE WITH OID {}", type);
-                    String arrString = String.format("{%s}",
-                            HdfsUtilities.toString((List<OneField>) val, ","));
-                    LOG.info("WE ARE IN INTARRAY: {}", arrString);
-
-                    gpdbOutput.setString(colIdx, arrString);
-                    break;
                 default:
-                    if (DataType.isArrayType(type)) {
-                        LOG.info("WE ARE AN ARRAY TYPE WITH OID {}", type);
-                        String blah = ObjectUtils.toString(val, null);
-                        gpdbOutput.setString(colIdx, blah);
-                        break;
-                    }
                     LOG.info("I AM DEFAULT. MY TYPE IS {}", type);
                     String valClassName = (val != null) ? val.getClass().getSimpleName()
                             : null;
