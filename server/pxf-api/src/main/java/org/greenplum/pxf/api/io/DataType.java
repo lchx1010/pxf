@@ -135,6 +135,10 @@ public enum DataType {
         return true;
     }
 
+    public boolean isBinaryFormatType() {
+        return this == BOOLEAN || this == BYTEA || this == INTEGER || this == BIGINT || this == SMALLINT || this == REAL || this == FLOAT8;
+    }
+
     public int getOID() {
         return OID;
     }

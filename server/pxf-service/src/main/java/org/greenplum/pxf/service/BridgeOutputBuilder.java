@@ -35,6 +35,7 @@ import org.greenplum.pxf.api.model.GreenplumCSV;
 import org.greenplum.pxf.api.model.OutputFormat;
 import org.greenplum.pxf.api.model.RequestContext;
 import org.greenplum.pxf.api.utilities.ColumnDescriptor;
+import org.greenplum.pxf.plugins.hdfs.utilities.HdfsUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -280,8 +281,20 @@ public class BridgeOutputBuilder {
      */
     boolean isTypeInSchema(int recType, int schemaType) {
         DataType dtRec = DataType.get(recType);
+        // schema from GPDB table
         DataType dtSchema = DataType.get(schemaType);
 
+        if (!dtSchema.isBinaryFormatType()) {
+            return dtRec == DataType.TEXT;
+        } else {
+            return dtSchema == DataType.UNSUPPORTED_TYPE || dtSchema == dtRec;
+        }
+
+        // gpdb schema = text
+        // avro = array
+
+        // gpdb schema = array
+        // avro = array
         return (dtSchema == DataType.UNSUPPORTED_TYPE || dtRec == dtSchema || (isStringType(dtRec) && isStringType(dtSchema)));
     }
 
@@ -433,6 +446,14 @@ public class BridgeOutputBuilder {
                     String objString = ObjectUtils.toString(val, null);
                     LOG.info("object string is: {}", objString);
                     gpdbOutput.setString(colIdx, objString);
+                    break;
+                case INT4ARRAY:
+                    LOG.info("WE ARE AN ARRAY TYPE WITH OID {}", type);
+                    String arrString = String.format("{%s}",
+                            HdfsUtilities.toString((List<OneField>) val, ","));
+                    LOG.info("WE ARE IN INTARRAY: {}", arrString);
+
+                    gpdbOutput.setString(colIdx, arrString);
                     break;
                 default:
                     if (DataType.isArrayType(type)) {
