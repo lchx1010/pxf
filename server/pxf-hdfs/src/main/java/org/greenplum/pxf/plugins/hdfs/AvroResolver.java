@@ -37,7 +37,6 @@ import org.greenplum.pxf.api.model.Resolver;
 import org.greenplum.pxf.api.utilities.ColumnDescriptor;
 import org.greenplum.pxf.api.utilities.SpringContext;
 import org.greenplum.pxf.plugins.hdfs.avro.AvroUtilities;
-import org.greenplum.pxf.plugins.hdfs.utilities.FormatHandlerUtil;
 import org.greenplum.pxf.plugins.hdfs.utilities.HdfsUtilities;
 import org.greenplum.pxf.plugins.hdfs.utilities.RecordkeyAdapter;
 
@@ -171,7 +170,7 @@ public class AvroResolver extends BasePlugin implements Resolver {
                 // ---------
                 //  box
                 //  _box
-                field.val = FormatHandlerUtil.decodeString(schema.getFields().get(cnt).schema(), (String) field.val, true, ',');
+                field.val = avroUtilities.decodeString(schema.getFields().get(cnt).schema(), (String) field.val, true, ',');
             }
             genericRecord.put(cnt++, field.val);
         }
