@@ -123,11 +123,8 @@ public class AvroResolver extends BasePlugin implements Resolver {
                         context, row);
             }
 
-            // TODO: should we be double checking this is the correct column
-//            ColumnDescriptor col = context.getTupleDescription();
-            DataType gpdbSchema = context.getColumn(currentIndex).getDataType();
             currentIndex += populateRecord(record,
-                    avroRecord.get(field.name()), field.schema(), gpdbSchema);
+                    avroRecord.get(field.name()), field.schema());
         }
         return record;
     }
@@ -215,9 +212,15 @@ public class AvroResolver extends BasePlugin implements Resolver {
      * @return the number of populated fields
      */
     int populateRecord(List<OneField> record, Object fieldValue,
-                       Schema fieldSchema, DataType gpdbColType) {
+                       Schema fieldSchema) {
 
         Schema.Type fieldType = fieldSchema.getType();
+        DataType gpdbColType = context.getTupleDescription()
+                .stream()
+                .filter(c -> c.columnName() == fieldSchema.getName())
+                .findFirst()
+                .get()
+                .getDataType();
         int ret = 0;
 
         switch (fieldType) {
@@ -226,7 +229,7 @@ public class AvroResolver extends BasePlugin implements Resolver {
                     return addOneFieldToRecord(record, gpdbColType, null);
                 }
                 List<OneField> listRecord = new LinkedList<>();
-                ret = setArrayField(listRecord, fieldValue, fieldSchema, gpdbColType);
+                ret = setArrayField(listRecord, fieldValue, fieldSchema);
                 DataType type;
                 String formatType;
 
@@ -274,7 +277,7 @@ public class AvroResolver extends BasePlugin implements Resolver {
                 if (fieldValue == null) {
                     unionIndex ^= 1; // exclusive or assignment
                 }
-                ret = populateRecord(record, fieldValue, fieldSchema.getTypes().get(unionIndex), gpdbColType);
+                ret = populateRecord(record, fieldValue, fieldSchema.getTypes().get(unionIndex));
                 break;
             case ENUM:
                 ret = addOneFieldToRecord(record, DataType.TEXT, fieldValue);
@@ -329,8 +332,8 @@ public class AvroResolver extends BasePlugin implements Resolver {
             Schema fieldSchema = field.schema();
             Object fieldValue = rec.get(field.name());
             List<OneField> complexRecord = new LinkedList<>();
-            populateRecord(complexRecord, field.name(), fieldKeySchema, DataType.TEXT);
-            populateRecord(complexRecord, fieldValue, fieldSchema, DataType.TEXT);
+            populateRecord(complexRecord, field.name(), fieldKeySchema);
+            populateRecord(complexRecord, fieldValue, fieldSchema);
             addOneFieldToRecord(record, DataType.TEXT,
                     HdfsUtilities.toString(complexRecord, recordkeyDelim));
             currentIndex++;
@@ -359,8 +362,8 @@ public class AvroResolver extends BasePlugin implements Resolver {
         Map<String, ?> avroMap = ((Map<String, ?>) fieldValue);
         for (Map.Entry<String, ?> entry : avroMap.entrySet()) {
             List<OneField> complexRecord = new LinkedList<>();
-            populateRecord(complexRecord, entry.getKey(), keySchema, DataType.TEXT);
-            populateRecord(complexRecord, entry.getValue(), valueSchema, DataType.TEXT);
+            populateRecord(complexRecord, entry.getKey(), keySchema);
+            populateRecord(complexRecord, entry.getValue(), valueSchema);
             addOneFieldToRecord(record, DataType.TEXT,
                     HdfsUtilities.toString(complexRecord, mapkeyDelim));
         }
@@ -378,12 +381,12 @@ public class AvroResolver extends BasePlugin implements Resolver {
      * @return number of populated fields
      */
     int setArrayField(List<OneField> record, Object fieldValue,
-                      Schema arraySchema, DataType gpdbColType) {
+                      Schema arraySchema) {
         Schema typeSchema = arraySchema.getElementType();
         GenericData.Array<?> array = (GenericData.Array<?>) fieldValue;
         int length = array.size();
         for (Object o : array) {
-            populateRecord(record, o, typeSchema, gpdbColType);
+            populateRecord(record, o, typeSchema);
         }
         return length;
     }
