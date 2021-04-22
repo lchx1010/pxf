@@ -31,6 +31,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.io.BytesWritable;
 import org.greenplum.pxf.api.OneField;
 import org.greenplum.pxf.api.OneRow;
+import org.greenplum.pxf.api.error.BadRecordException;
 import org.greenplum.pxf.api.io.DataType;
 import org.greenplum.pxf.api.model.BasePlugin;
 import org.greenplum.pxf.api.model.Resolver;
@@ -111,6 +112,12 @@ public class AvroResolver extends BasePlugin implements Resolver {
     public List<OneField> getFields(OneRow row) throws Exception {
         avroRecord = makeAvroRecord(row.getData(), avroRecord);
         List<OneField> record = new LinkedList<>();
+
+        int avroFieldsSize = fields.size();
+        int numGpdbCols = context.getColumns();
+        if (avroFieldsSize != numGpdbCols) {
+            throw new BadRecordException(String.format("Avro record has %d fields but GPDB table has %d columns.", avroFieldsSize, numGpdbCols));
+        }
 
         int currentIndex = 0;
         for (Schema.Field field : fields) {
