@@ -87,12 +87,12 @@ public final class AvroUtilities {
     }
 
     /**
-     * Converts an array from Postgres' external string format to a Java object
+     * Parse a Postgres external format into a given Avro schema
      *
      * Re-used from GPHDFS
      * https://github.com/greenplum-db/gpdb/blob/3b0bfdc169fab7f686276be7eccb024a5e29543c/gpAux/extensions/gphdfs/src/java/1.2/com/emc/greenplum/gpdb/hadoop/formathandler/util/FormatHandlerUtil.java
-     * @param schema
-     * @param value
+     * @param schema target Avro schema
+     * @param value Postgres external format (the output of function named by typoutput in pg_type)
      * @param isTopLevel
      * @param delimiter
      * @return

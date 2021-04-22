@@ -160,6 +160,15 @@ public class AvroResolver extends BasePlugin implements Resolver {
                 // Avro doesn't have a short, just an int type
                 field.val = field.val != null ? (int) (short) field.val : null;
             } else if (field.type == DataType.TEXT.getOID()) {
+                //
+                // column type | avro type
+                // ------------|----------
+                // text        | string    > compatible, no need to decode
+                // int[]       | array/int > compatinle, need to decode
+                // int[]       | string    > compatible, no need to decode
+                // text        | array/int > try to decode (maybe log a warning?)
+
+
                 // FIXME: do not hard-code the delimiter here
                 // in gphdfs, the column delimiter was read from the input stream
                 // in AvroFileWriter, this is read from a schema-head block

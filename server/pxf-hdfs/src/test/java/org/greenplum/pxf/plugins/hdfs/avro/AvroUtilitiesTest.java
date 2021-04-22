@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AvroUtilitiesTest {
     private AvroSchemaFileReaderFactory avroSchemaFileReaderFactory;
@@ -402,6 +404,13 @@ public class AvroUtilitiesTest {
         Exception e = assertThrows(RuntimeException.class,
                 () -> schema = avroUtilities.obtainSchema(context, hcfsType));
         assertEquals("Failed to obtain Avro schema from 'user provided.avsc'", e.getMessage());
+    }
+
+    @Test
+    public void testDecodeStringValidArray() {
+        Schema arraySchema = Schema.createArray(Schema.create(Schema.Type.INT));
+        Object result = avroUtilities.decodeString(arraySchema, "{1,2,3}", true, ',');
+        assertEquals(Arrays.asList(1, 2, 3), result);
     }
 
     /**
