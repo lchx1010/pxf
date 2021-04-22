@@ -123,9 +123,10 @@ public class AvroResolver extends BasePlugin implements Resolver {
                         context, row);
             }
 
-            // TODO: should we be double checking this is the correct column
-//            ColumnDescriptor col = context.getTupleDescription();
-            DataType gpdbSchema = context.getColumn(currentIndex).getDataType();
+            ColumnDescriptor gpdbCol = context.getColumn(field.pos());
+            LOG.info("gpdbCol {}", gpdbCol.toString());
+            DataType gpdbSchema = gpdbCol.getDataType();
+
             currentIndex += populateRecord(record,
                     avroRecord.get(field.name()), field.schema(), gpdbSchema);
         }
