@@ -428,45 +428,4 @@ public class AvroResolver extends BasePlugin implements Resolver {
         record.add(oneField);
         return 1;
     }
-
-    DataType resolvePostgresArrayType(Schema avroSchema) {
-        DataType type;
-        switch(avroSchema.getType()) {
-            case ARRAY:
-                Schema arraySchema = avroSchema.getElementType();
-                type = resolvePostgresArrayType(arraySchema);
-                break;
-            case UNION:
-                Schema unionSchema = FormatHandlerUtil.firstNotNullSchema(avroSchema.getTypes());
-                type = resolvePostgresArrayType(unionSchema);
-                break;
-            case BYTES:
-            case FIXED:
-                type = DataType.BYTEAARRAY;
-                break;
-            case INT:
-                type = DataType.INT4ARRAY;
-                break;
-            case LONG:
-                type = DataType.INT8ARRAY;
-                break;
-            case FLOAT:
-                type = DataType.FLOAT4ARRAY;
-                break;
-            case DOUBLE:
-                type = DataType.FLOAT8ARRAY;
-                break;
-            case BOOLEAN:
-                type = DataType.BOOLARRAY;
-                break;
-            case ENUM:
-            case STRING:
-                type = DataType.TEXTARRAY;
-                break;
-            default:
-                // for any other complex array types (like struct arrays or arrays of ints + strings)
-                type = DataType.TEXTARRAY;
-        }
-        return type;
-    }
 }
