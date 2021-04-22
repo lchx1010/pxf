@@ -238,7 +238,7 @@ public class AvroResolver extends BasePlugin implements Resolver {
                     formatType = "{%s}";
                 } else {
                     type = DataType.TEXT;
-                    formatType = "[%]";
+                    formatType = "[%s]";
                 }
 
                 addOneFieldToRecord(record, type, String.format(formatType,
