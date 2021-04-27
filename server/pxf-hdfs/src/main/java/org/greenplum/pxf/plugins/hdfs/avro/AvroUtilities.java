@@ -1,5 +1,7 @@
 package org.greenplum.pxf.plugins.hdfs.avro;
 
+import com.google.cloud.hadoop.repackaged.gcs.org.apache.commons.codec.DecoderException;
+import com.google.cloud.hadoop.repackaged.gcs.org.apache.commons.codec.binary.Hex;
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.avro.Schema;
 import org.apache.avro.file.DataFileReader;
@@ -92,7 +94,7 @@ public final class AvroUtilities {
      * Re-used from GPHDFS
      * https://github.com/greenplum-db/gpdb/blob/3b0bfdc169fab7f686276be7eccb024a5e29543c/gpAux/extensions/gphdfs/src/java/1.2/com/emc/greenplum/gpdb/hadoop/formathandler/util/FormatHandlerUtil.java
      * @param schema target Avro schema
-     * @param value Postgres external format (the output of function named by typoutput in pg_type)
+     * @param value Postgres external format (the output of function named by typoutput in pg_type) or `null` if null value
      * @param isTopLevel
      * @param delimiter
      * @return
@@ -121,6 +123,7 @@ public final class AvroUtilities {
                 LOG.debug("is a union");
                 schema = firstNotNullSchema(schema.getTypes());
                 if (schema == null) {
+                    // FIXME: `schema` is always null so why include it in the exception message
                     throw new PxfRuntimeException(String.format("%s is a union but only has null type", schema));
                 }
 
@@ -150,7 +153,11 @@ public final class AvroUtilities {
                 case LONG:
                     return Long.parseLong(value);
                 case BYTES:
-                    return octString2byteArray(value);
+                    try {
+                        return ByteBuffer.wrap(Hex.decodeHex(value.substring(4, value.length() - 1).toCharArray()));
+                    } catch (DecoderException e) {
+                        throw new PxfRuntimeException(String.format("bad value " + value), e);
+                    }
                 case BOOLEAN:
                     return Boolean.parseBoolean(value);
                 default:

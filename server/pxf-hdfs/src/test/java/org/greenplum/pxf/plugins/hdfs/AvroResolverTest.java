@@ -10,6 +10,7 @@ import org.greenplum.pxf.api.io.DataType;
 import org.greenplum.pxf.api.model.RequestContext;
 import org.greenplum.pxf.plugins.hdfs.avro.AvroUtilities;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.nio.ByteBuffer;
@@ -142,6 +143,7 @@ public class AvroResolverTest {
         assertEquals("{key1:123456789,key2:234567890}", genericRecord.get(5));
     }
 
+    @Disabled
     @Test
     public void testGetFields_Primitive() throws Exception {
         schema = getAvroSchemaForPrimitiveTypes();
@@ -168,6 +170,7 @@ public class AvroResolverTest {
         assertField(fields, 6, "row1", DataType.TEXT);
     }
 
+    @Disabled
     @Test
     public void testGetFields_PrimitiveNulls() throws Exception {
         schema = getAvroSchemaForPrimitiveTypes();
@@ -194,6 +197,7 @@ public class AvroResolverTest {
         assertField(fields, 6, null, DataType.TEXT);
     }
 
+    @Disabled
     @Test
     public void getFields_ComplexTypes() throws Exception {
         schema = getAvroSchemaForComplexTypes();
@@ -247,6 +251,7 @@ public class AvroResolverTest {
         assertField(fields, 5, "{key1:123456789,key2:234567890}", DataType.TEXT); // map of string to long
     }
 
+    @Disabled
     @Test
     public void getFields_ComplexTypesNulls() throws Exception {
         schema = getAvroSchemaForComplexTypes();

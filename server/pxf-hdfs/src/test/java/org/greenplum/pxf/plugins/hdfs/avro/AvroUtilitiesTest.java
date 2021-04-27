@@ -2,20 +2,27 @@ package org.greenplum.pxf.plugins.hdfs.avro;
 
 import org.apache.avro.Schema;
 import org.apache.hadoop.conf.Configuration;
+import org.greenplum.pxf.api.error.PxfRuntimeException;
 import org.greenplum.pxf.api.model.RequestContext;
 import org.greenplum.pxf.plugins.hdfs.HcfsType;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.exceptions.util.ScenarioPrinter;
 
 import java.io.File;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -407,10 +414,87 @@ public class AvroUtilitiesTest {
     }
 
     @Test
-    public void testDecodeStringValidArray() {
+    public void testDecodeIntegerArray() {
         Schema arraySchema = Schema.createArray(Schema.create(Schema.Type.INT));
         Object result = avroUtilities.decodeString(arraySchema, "{1,2,3}", true, ',');
         assertEquals(Arrays.asList(1, 2, 3), result);
+    }
+
+    @Test
+    public void testDecodeIntegerArrayWithNulls() {
+        Schema arraySchema = Schema.createArray(Schema.create(Schema.Type.INT));
+        Object result = avroUtilities.decodeString(arraySchema, "{1,NULL,3}", true, ',');
+        assertEquals(Arrays.asList(1, null, 3), result);
+    }
+
+    @Test
+    public void testDecodeStringNullableArray() {
+        Schema nullableArray = Schema.createUnion(
+                Arrays.asList(
+                        Schema.create(Schema.Type.NULL),
+                        Schema.createArray(Schema.create(Schema.Type.INT))));
+
+        Object result = avroUtilities.decodeString(nullableArray, "{1,2,3}", true, ',');
+        assertEquals(Arrays.asList(1, 2, 3), result);
+
+        result = avroUtilities.decodeString(nullableArray, null, true, ',');
+        assertNull(result);
+    }
+
+    @Test
+    public void testDecodeStringUnionOnlyNull() {
+        Schema schema = Schema.createUnion(
+                Arrays.asList(
+                        Schema.create(Schema.Type.NULL)
+                        ));
+        Exception exception = assertThrows(PxfRuntimeException.class,
+                () -> avroUtilities.decodeString(schema, "", true, ','));
+        assertEquals("null is a union but only has null type", exception.getMessage());
+    }
+
+    @Test
+    public void testDecodeStringDoubleArray() {
+        Schema schema = Schema.createArray(Schema.create(Schema.Type.DOUBLE));
+        String value = "{-1.79769E+308,-2.225E-307,0,2.225E-307,1.79769E+308}";
+
+        Object result = avroUtilities.decodeString(schema, value, true, ',');
+        assertEquals(Arrays.asList(-1.79769E308, -2.225E-307, 0.0, 2.225E-307, 1.79769E308), result);
+    }
+
+    @Test
+    public void testDecodeStringStringArray() {
+        Schema schema = Schema.createArray(Schema.create(Schema.Type.STRING));
+        String value = "{fizz,buzz,fizzbuzz}";
+
+        Object result = avroUtilities.decodeString(schema, value, true, ',');
+        assertEquals(Arrays.asList("fizz", "buzz", "fizzbuzz"), result);
+    }
+
+    @Test
+    public void testDecodeStringByteaArray() {
+        Schema schema = Schema.createArray(Schema.create(Schema.Type.BYTES));
+        String value = "{\"\\\\xdeadbeef\",\"\\\\xdeadc0de\",\"\\\\xfee1dead\"}";
+
+        @SuppressWarnings("unchecked")
+        List<ByteBuffer> result = (List<ByteBuffer>) avroUtilities.decodeString(schema, value, true, ',');
+        assertEquals(3, result.size());
+
+        ByteBuffer buffer1 = result.get(0);
+        assertArrayEquals(buffer1.array(), new byte[]{(byte) 0xde, (byte) 0xad, (byte) 0xbe, (byte) 0xef});
+        ByteBuffer buffer2 = result.get(1);
+        assertArrayEquals(buffer2.array(), new byte[]{(byte) 0xde, (byte) 0xad, (byte) 0xc0, (byte) 0xde});
+        ByteBuffer buffer3 = result.get(2);
+        assertArrayEquals(buffer3.array(), new byte[]{(byte) 0xfe, (byte) 0xe1, (byte) 0xde, (byte) 0xad});
+
+    }
+
+    @Test
+    public void testDecodeStringBooleanArray() {
+        Schema schema = Schema.createArray(Schema.create(Schema.Type.BOOLEAN));
+        String value = "{true, false, t}";
+
+        Object result = avroUtilities.decodeString(schema, value, true, ',');
+        assertEquals(Arrays.asList(true, false, false), result);
     }
 
     /**
