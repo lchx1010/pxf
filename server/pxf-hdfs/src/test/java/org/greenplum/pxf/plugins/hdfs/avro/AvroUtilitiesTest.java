@@ -497,6 +497,22 @@ public class AvroUtilitiesTest {
         assertEquals(Arrays.asList(true, false, false), result);
     }
 
+    @Test
+    public void testGetArraySplits() {
+        String value = "{1,2,3}";
+        String[] arraySplits = avroUtilities.getArraySplits(value.toCharArray(), ',');
+
+        assertArrayEquals(new String[]{"1", "2", "3"}, arraySplits);
+    }
+
+    @Test
+    public void testGetArraySplitsDoesNotSupportMultiDimensional() {
+        String value = "{{1,2,3},{4,5,6}}";
+
+        Exception e = assertThrows(PxfRuntimeException.class, () -> avroUtilities.getArraySplits(value.toCharArray(), ','));
+        assertEquals("Multi-dimensional arrays are not supported", e.getMessage());
+    }
+
     /**
      * Helper method for testing schema
      *

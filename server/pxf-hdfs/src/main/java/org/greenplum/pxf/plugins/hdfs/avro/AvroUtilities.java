@@ -278,6 +278,12 @@ public final class AvroUtilities {
                 Arrays.asList(Schema.create(Schema.Type.NULL), Schema.create(arrayElemType))));
     }
 
+    /**
+     * Split the outer-most Postgres array into its constituent elements
+     * @param value string with a Postgres array
+     * @param delimiter character separating array elements in value
+     * @return array of strings for each element
+     */
     public String[] getArraySplits(char[] value, char delimiter) {
         List<Integer> posList = new ArrayList<>();
         posList.add(0);
@@ -375,6 +381,7 @@ public final class AvroUtilities {
         return ByteBuffer.wrap(ba);
     }
 
+    // FIXME: should we check that chars are only in the range '0' -- '7'?
     private byte octString2Byte(String string) {
         int num = 0;
         for (int i = 0; i < string.length(); i++) {
