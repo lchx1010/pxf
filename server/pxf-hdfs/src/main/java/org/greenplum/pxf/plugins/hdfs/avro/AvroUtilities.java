@@ -153,10 +153,16 @@ public final class AvroUtilities {
                 case LONG:
                     return Long.parseLong(value);
                 case BYTES:
-                    try {
-                        return ByteBuffer.wrap(Hex.decodeHex(value.substring(4, value.length() - 1).toCharArray()));
-                    } catch (DecoderException e) {
-                        throw new PxfRuntimeException(String.format("bad value " + value), e);
+                    // in the case of array if it comes here the string will in the form "\\xDEADBEAF" for hex or
+                    // "\\123456" for octal. If the 4th char (index 3) is an x, then we should decode using hex
+                    if (value.charAt(3) == 'x') {
+                        try {
+                            return ByteBuffer.wrap(Hex.decodeHex(value.substring(4, value.length() - 1).toCharArray()));
+                        } catch (DecoderException e) {
+                            throw new PxfRuntimeException(String.format("bad value " + value), e);
+                        }
+                    } else {
+                        return octString2byteArray(value);
                     }
                 case BOOLEAN:
                     return Boolean.parseBoolean(value);
