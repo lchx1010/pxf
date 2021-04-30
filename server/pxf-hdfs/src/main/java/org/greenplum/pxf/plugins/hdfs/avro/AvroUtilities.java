@@ -153,22 +153,29 @@ public final class AvroUtilities {
                 case LONG:
                     return Long.parseLong(value);
                 case BYTES:
-                    // in the case of array if it comes here the string will in the form "\\xDEADBEAF" for hex or
-                    // "\\123456" for octal. If the 4th char (index 3) is an x, then we should decode using hex
-                    if (value.charAt(3) == 'x') {
-                        try {
-                            return ByteBuffer.wrap(Hex.decodeHex(value.substring(4, value.length() - 1).toCharArray()));
-                        } catch (DecoderException e) {
-                            throw new PxfRuntimeException(String.format("bad value " + value), e);
-                        }
+                    /* decodeString is only called for types that GpdbWritable sends as text; since bytea is sent by
+                     * GpdbWritable in binary, we only get to this point for bytea[]. That means that hex formatted
+                     * elements will be `"\\xFFFFFFF"`. If it is not hex formatted, we assume that it is escape
+                     * formatted (e.g., octal).
+                     */
+                    if (value.startsWith("\"\\\\x")) {
+                        return parseHexFormat(value);
                     } else {
-                        return octString2byteArray(value);
+                        return parseEscapeFormat(value);
                     }
                 case BOOLEAN:
                     return Boolean.parseBoolean(value);
                 default:
                     throw new PxfRuntimeException(String.format("type: %s cannot be supported now", fieldType));
             }
+        }
+    }
+
+    private ByteBuffer parseHexFormat(String value) {
+        try {
+            return ByteBuffer.wrap(Hex.decodeHex(value.substring(4, value.length() - 1).toCharArray()));
+        } catch (DecoderException e) {
+            throw new PxfRuntimeException(String.format("bad value " + value), e);
         }
     }
 
@@ -346,7 +353,7 @@ public final class AvroUtilities {
         return num % 2 == 0;
     }
 
-    public ByteBuffer octString2byteArray(String value) {
+    public ByteBuffer parseEscapeFormat(String value) {
         List<Byte> byteList = new ArrayList<>();
         int index = 0, length = value.length();
         if (value.charAt(0) == '"') {

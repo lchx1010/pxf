@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -471,21 +472,46 @@ public class AvroUtilitiesTest {
     }
 
     @Test
-    public void testDecodeStringByteaArray() {
+    public void testDecodeStringByteaArrayEscapeOutput() {
         Schema schema = Schema.createArray(Schema.create(Schema.Type.BYTES));
-        String value = "{\"\\\\xdeadbeef\",\"\\\\xdeadc0de\",\"\\\\xfee1dead\"}";
+        String value = "{\"\\\\001\",\"\\\\001#\"}";
 
         @SuppressWarnings("unchecked")
         List<ByteBuffer> result = (List<ByteBuffer>) avroUtilities.decodeString(schema, value, true, ',');
-        assertEquals(3, result.size());
+        assertEquals(2, result.size());
 
         ByteBuffer buffer1 = result.get(0);
-        assertArrayEquals(buffer1.array(), new byte[]{(byte) 0xde, (byte) 0xad, (byte) 0xbe, (byte) 0xef});
+        assertArrayEquals(new byte[] {0x01}, buffer1.array());
         ByteBuffer buffer2 = result.get(1);
-        assertArrayEquals(buffer2.array(), new byte[]{(byte) 0xde, (byte) 0xad, (byte) 0xc0, (byte) 0xde});
-        ByteBuffer buffer3 = result.get(2);
-        assertArrayEquals(buffer3.array(), new byte[]{(byte) 0xfe, (byte) 0xe1, (byte) 0xde, (byte) 0xad});
+        assertArrayEquals(new byte[]{0x01, 0x23}, buffer2.array());
+    }
 
+    @Test
+    public void testDecodeStringByteaArrayEscapeOutputContainsQuote() {
+        Schema schema = Schema.createArray(Schema.create(Schema.Type.BYTES));
+        String value = "{\"\\\"#$\"}";
+
+        @SuppressWarnings("unchecked")
+        List<ByteBuffer> result = (List<ByteBuffer>) avroUtilities.decodeString(schema, value, true, ',');
+        assertEquals(1, result.size());
+
+        ByteBuffer buffer1 = result.get(0);
+        assertArrayEquals(new byte[]{0x22, 0x23, 0x24}, buffer1.array());
+    }
+
+    @Test
+    public void testDecodeStringByteaArrayHexOutput() {
+        Schema schema = Schema.createArray(Schema.create(Schema.Type.BYTES));
+        String value = "{\"\\\\x01\",\"\\\\x0123\"}";
+
+        @SuppressWarnings("unchecked")
+        List<ByteBuffer> result = (List<ByteBuffer>) avroUtilities.decodeString(schema, value, true, ',');
+        assertEquals(2, result.size());
+
+        ByteBuffer buffer1 = result.get(0);
+        assertArrayEquals(new byte[]{0x01}, buffer1.array());
+        ByteBuffer buffer2 = result.get(1);
+        assertArrayEquals(new byte[]{0x01, 0x23}, buffer2.array());
     }
 
     @Test
@@ -502,15 +528,16 @@ public class AvroUtilitiesTest {
         String value = "{1,2,3}";
         String[] arraySplits = avroUtilities.getArraySplits(value.toCharArray(), ',');
 
-        assertArrayEquals(new String[]{"1", "2", "3"}, arraySplits);
+        assertArrayEquals(Stream.of("1", "2", "3").toArray(), arraySplits);
     }
 
+    @Disabled
     @Test
     public void testGetArraySplitsDoesNotSupportMultiDimensional() {
-        String value = "{{1,2,3},{4,5,6}}";
+        String value = "{{\"\\\\x01\",\"\\\\x23\"},{\"\\\\x45\",\"\\\\x67\"}}";
 
         Exception e = assertThrows(PxfRuntimeException.class, () -> avroUtilities.getArraySplits(value.toCharArray(), ','));
-        assertEquals("Multi-dimensional arrays are not supported", e.getMessage());
+        assertEquals("Multi-dimensional arrays are not supported.", e.getMessage());
     }
 
     /**
