@@ -517,10 +517,10 @@ public class AvroUtilitiesTest {
     @Test
     public void testDecodeStringBooleanArray() {
         Schema schema = Schema.createArray(Schema.create(Schema.Type.BOOLEAN));
-        String value = "{true, false, t}";
+        String value = "{t,f,t}";
 
         Object result = avroUtilities.decodeString(schema, value, true, ',');
-        assertEquals(Arrays.asList(true, false, false), result);
+        assertEquals(Arrays.asList(true, false, true), result);
     }
 
     @Test

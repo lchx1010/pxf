@@ -164,11 +164,21 @@ public final class AvroUtilities {
                         return parseEscapeFormat(value);
                     }
                 case BOOLEAN:
-                    return Boolean.parseBoolean(value);
+                    return parsePgBoolLiteral(value);
                 default:
                     throw new PxfRuntimeException(String.format("type: %s cannot be supported now", fieldType));
             }
         }
+    }
+
+    private boolean parsePgBoolLiteral(final String value) {
+        if (StringUtils.equals(value, "t")) {
+            return true;
+        } else if (StringUtils.equals(value, "f")) {
+            return false;
+        }
+
+        throw new PxfRuntimeException(String.format("malformed boolean literal \"%s\"", value));
     }
 
     private ByteBuffer parseHexFormat(String value) {
