@@ -153,21 +153,25 @@ public final class AvroUtilities {
                 case LONG:
                     return Long.parseLong(value);
                 case BYTES:
-                    /* decodeString is only called for types that GpdbWritable sends as text; since bytea is sent by
-                     * GpdbWritable in binary, we only get to this point for bytea[]. That means that hex formatted
-                     * elements will be `"\\xFFFFFFF"`. If it is not hex formatted, we assume that it is escape
-                     * formatted (e.g., octal).
-                     */
-                    if (value.startsWith("\"\\\\x")) {
-                        return parseHexFormat(value);
-                    } else {
-                        return parseEscapeFormat(value);
-                    }
+                    return parsePgByteaLiteral(value);
                 case BOOLEAN:
                     return parsePgBoolLiteral(value);
                 default:
                     throw new PxfRuntimeException(String.format("type: %s cannot be supported now", fieldType));
             }
+        }
+    }
+
+    private ByteBuffer parsePgByteaLiteral(String value) {
+        /* decodeString is only called for types that GpdbWritable sends as text; since bytea is sent by
+         * GpdbWritable in binary, we only get to this point for bytea[]. That means that hex formatted
+         * elements will be `"\\xFFFFFFF"`. If it is not hex formatted, we assume that it is escape
+         * formatted (e.g., octal).
+         */
+        if (value.startsWith("\"\\\\x")) {
+            return parseHexFormat(value);
+        } else {
+            return parseEscapeFormat(value);
         }
     }
 
@@ -185,7 +189,7 @@ public final class AvroUtilities {
         try {
             return ByteBuffer.wrap(Hex.decodeHex(value.substring(4, value.length() - 1).toCharArray()));
         } catch (DecoderException e) {
-            throw new PxfRuntimeException(String.format("bad value " + value), e);
+            throw new PxfRuntimeException(String.format("malformed bytea literal \"%s\"", value), e);
         }
     }
 
@@ -363,7 +367,7 @@ public final class AvroUtilities {
         return num % 2 == 0;
     }
 
-    public ByteBuffer parseEscapeFormat(String value) {
+    private ByteBuffer parseEscapeFormat(String value) {
         List<Byte> byteList = new ArrayList<>();
         int index = 0, length = value.length();
         if (value.charAt(0) == '"') {
@@ -377,14 +381,14 @@ public final class AvroUtilities {
                 if (value.charAt(index) == '\\' && value.charAt(index + 1) == '\\') {
                     byteList.add((byte) 0x5C);
                     index += 2;
-                }else {
+                } else {
                     byteList.add(octString2Byte(value.substring(index, index + 3)));
                     index += 3;
                 }
-            }else if (value.charAt(index) == '\\') {
+            } else if (value.charAt(index) == '\\') {
                 byteList.add((byte) value.charAt(index+1));
                 index += 2;
-            }else {
+            } else {
                 byteList.add((byte) value.charAt(index));
                 index++;
             }

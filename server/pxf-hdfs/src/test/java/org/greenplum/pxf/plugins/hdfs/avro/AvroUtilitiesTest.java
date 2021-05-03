@@ -515,6 +515,15 @@ public class AvroUtilitiesTest {
     }
 
     @Test
+    public void testDecodeStringByteaInvalidHexFormat() {
+        Schema schema = Schema.create(Schema.Type.BYTES);
+        String value = "\"\\\\xGG\"";
+
+        Exception exception = assertThrows(PxfRuntimeException.class, () -> avroUtilities.decodeString(schema, value, true, ','));
+        assertEquals("malformed bytea literal \"\"\\\\xGG\"\"", exception.getMessage());
+    }
+
+    @Test
     public void testDecodeStringValidBooleanArray() {
         Schema schema = Schema.createArray(Schema.create(Schema.Type.BOOLEAN));
         String value = "{t,f,t}";
