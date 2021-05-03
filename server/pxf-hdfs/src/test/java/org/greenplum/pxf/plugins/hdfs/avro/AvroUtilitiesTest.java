@@ -515,12 +515,21 @@ public class AvroUtilitiesTest {
     }
 
     @Test
-    public void testDecodeStringBooleanArray() {
+    public void testDecodeStringValidBooleanArray() {
         Schema schema = Schema.createArray(Schema.create(Schema.Type.BOOLEAN));
         String value = "{t,f,t}";
 
         Object result = avroUtilities.decodeString(schema, value, true, ',');
         assertEquals(Arrays.asList(true, false, true), result);
+    }
+
+    @Test
+    public void testDecodeStringInValidBooleanArray() {
+        Schema schema = Schema.createArray(Schema.create(Schema.Type.BOOLEAN));
+        String value = "{true,false,true}";
+
+        Exception exception = assertThrows(PxfRuntimeException.class, () -> avroUtilities.decodeString(schema, value, true, ','));
+        assertEquals("malformed boolean literal \"true\"", exception.getMessage());
     }
 
     @Test
