@@ -110,12 +110,12 @@ public final class AvroUtilities {
                 return null;
             }
 
-            List<Object> foo = new ArrayList<>();
+            List<Object> list = new ArrayList<>();
             String[] splits = getArraySplits(value.toCharArray(), delimiter);
             for (String s : splits) {
-                foo.add(decodeString(schema.getElementType(), s, false, delimiter));
+                list.add(decodeString(schema.getElementType(), s, false, delimiter));
             }
-            return foo;
+            return list;
         } else {
             if (fieldType == Schema.Type.UNION) {
                 schema = firstNotNullSchema(schema.getTypes());
