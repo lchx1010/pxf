@@ -1,7 +1,7 @@
 package org.greenplum.pxf.plugins.hdfs.avro;
 
-import com.google.cloud.hadoop.repackaged.gcs.org.apache.commons.codec.DecoderException;
-import com.google.cloud.hadoop.repackaged.gcs.org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.avro.Schema;
 import org.apache.avro.file.DataFileReader;
