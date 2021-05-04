@@ -155,11 +155,13 @@ anchors:
 ## ======================================================================
 resource_types:
 
-- name: terraform
+- name: data-gpdb-ud-terraform
   type: registry-image
   source:
-    repository: ljfranklin/terraform-resource
-    tag: 0.11.14
+    repository: gcr.io/data-gpdb-ud/terraform-resource
+    tag: 0.11.15
+    username: _json_key
+    password: ((pxf-cloudbuild-service-account-key))
 
 - name: gcs
   type: registry-image
@@ -481,7 +483,7 @@ resources:
 
 ## ---------- Auxiliary Resources ----------
 - name: terraform
-  type: terraform
+  type: data-gpdb-ud-terraform
   source:
     env:
       AWS_ACCESS_KEY_ID: ((tf-machine-access-key-id))
