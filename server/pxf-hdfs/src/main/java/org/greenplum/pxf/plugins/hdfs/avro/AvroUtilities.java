@@ -117,10 +117,7 @@ public final class AvroUtilities {
             }
             return foo;
         } else {
-            LOG.debug("not an array");
-
             if (fieldType == Schema.Type.UNION) {
-                LOG.debug("is a union");
                 schema = firstNotNullSchema(schema.getTypes());
                 if (schema == null) {
                     // FIXME: `schema` is always null so why include it in the exception message
@@ -129,7 +126,6 @@ public final class AvroUtilities {
 
                 fieldType = schema.getType();
                 if (fieldType == Schema.Type.ARRAY) {
-                    LOG.debug("first non-null type is array");
                     return decodeString(schema, value, isTopLevel, delimiter);
                 }
             }
@@ -414,7 +410,6 @@ public final class AvroUtilities {
 
     public Schema firstNotNullSchema(List<Schema> types) {
         for (Schema schema : types) {
-            LOG.debug("check if {} is not null", schema);
             if (schema.getType() != Schema.Type.NULL) {
                 return schema;
             }
