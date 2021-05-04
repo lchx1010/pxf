@@ -129,9 +129,7 @@ public class AvroResolver extends BasePlugin implements Resolver {
                         context, row);
             }
 
-            ColumnDescriptor gpdbCol = context.getColumn(field.pos());
-            LOG.info("gpdbCol {}", gpdbCol.toString());
-            DataType gpdbSchema = gpdbCol.getDataType();
+            DataType gpdbSchema = context.getColumn(field.pos()).getDataType();
 
             currentIndex += populateRecord(record,
                     avroRecord.get(field.name()), field.schema(), gpdbSchema);
