@@ -251,6 +251,7 @@ public class HiveBaseTest extends BaseFeature {
     static final String HIVE_ORC_TABLE = "hive_orc_table";
     static final String HIVE_ORC_SNAPPY_TABLE = "hive_orc_snappy";
     static final String HIVE_ORC_ZLIB_TABLE = "hive_orc_zlib";
+    static final String HIVE_ORC_MULTIFILE_TABLE = "hive_orc_multifile";
     static final String HIVE_PARQUET_TIMESTAMP_TABLE = "hive_parquet_timestamp";
     static final String HIVE_BINARY_TABLE = "hive_binary";
     static final String HIVE_COLLECTIONS_TABLE = "hive_collections_table";
@@ -272,6 +273,8 @@ public class HiveBaseTest extends BaseFeature {
     static final String PXF_HIVE_TEXT_TABLE = "pxf_hive_text";
     static final String PXF_HIVE_ORC_TABLE = "pxf_hive_orc_types";
     static final String PXF_HIVE_ORC_ZLIB_TABLE = "pxf_hive_orc_zlib";
+    static final String PXF_HIVE_ORC_MULTIFILE_TABLE = "pxf_hive_orc_multifile";
+    static final String PXF_HIVE_ORC_MULTIFILE_VECTORIZED_TABLE = "pxf_hive_orc_multifile_vectorized";
     static final String PXF_HIVE_PARQUET_TIMESTAMP_TABLE = "pxf_hive_parquet_timestamp";
     static final String PXF_HIVE_HETEROGEN_TABLE = "pxf_hive_heterogen";
     static final String GPDB_SMALL_DATA_TABLE = "gpdb_small_data";
@@ -301,6 +304,7 @@ public class HiveBaseTest extends BaseFeature {
     HiveTable hiveOrcAllTypes;
     HiveTable hiveOrcSnappyTable;
     HiveTable hiveOrcZlibTable;
+    HiveTable hiveOrcMultiFileTable;
     HiveTable hiveRcTable;
     HiveTable hiveRcForAlterTable;
     HiveTable hiveSequenceTable;
@@ -430,6 +434,19 @@ public class HiveBaseTest extends BaseFeature {
         hiveOrcAllTypes.setStoredAs(ORC);
         hive.createTableAndVerify(hiveOrcAllTypes);
         hive.insertData(hiveTypesTable, hiveOrcAllTypes);
+    }
+
+    void prepareOrcMultiFileData() throws Exception {
+
+        if (hiveOrcMultiFileTable != null)
+            return;
+        hiveOrcMultiFileTable = new HiveTable(HIVE_ORC_MULTIFILE_TABLE, HIVE_SMALLDATA_COLS);
+        hiveOrcMultiFileTable.setStoredAs(ORC);
+        hive.createTableAndVerify(hiveOrcMultiFileTable);
+        // insert data 3 times to produce 3 backing files (and 3 PXF fragments)
+        hive.insertData(hiveSmallDataTable, hiveOrcMultiFileTable);
+        hive.insertData(hiveSmallDataTable, hiveOrcMultiFileTable);
+        hive.insertData(hiveSmallDataTable, hiveOrcMultiFileTable);
     }
 
     void prepareOrcSnappyData() throws Exception {

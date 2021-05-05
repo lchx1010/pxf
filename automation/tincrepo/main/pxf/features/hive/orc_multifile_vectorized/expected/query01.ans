@@ -1,0 +1,354 @@
+-- start_ignore
+-- end_ignore
+-- @description query01 for Hive ORC small data multifile vectorized
+-- query 10 times to make sure there are no race conditions across fragment processing
+SELECT * FROM pxf_hive_orc_multifile_vectorized ORDER BY t1;
+  t1   |  t2  | num1 | dub1
+-------+------+------+------
+ row1  | s_6  |    1 |    6
+ row1  | s_6  |    1 |    6
+ row1  | s_6  |    1 |    6
+ row10 | s_15 |   10 |   15
+ row10 | s_15 |   10 |   15
+ row10 | s_15 |   10 |   15
+ row2  | s_7  |    2 |    7
+ row2  | s_7  |    2 |    7
+ row2  | s_7  |    2 |    7
+ row3  | s_8  |    3 |    8
+ row3  | s_8  |    3 |    8
+ row3  | s_8  |    3 |    8
+ row4  | s_9  |    4 |    9
+ row4  | s_9  |    4 |    9
+ row4  | s_9  |    4 |    9
+ row5  | s_10 |    5 |   10
+ row5  | s_10 |    5 |   10
+ row5  | s_10 |    5 |   10
+ row6  | s_11 |    6 |   11
+ row6  | s_11 |    6 |   11
+ row6  | s_11 |    6 |   11
+ row7  | s_12 |    7 |   12
+ row7  | s_12 |    7 |   12
+ row7  | s_12 |    7 |   12
+ row8  | s_13 |    8 |   13
+ row8  | s_13 |    8 |   13
+ row8  | s_13 |    8 |   13
+ row9  | s_14 |    9 |   14
+ row9  | s_14 |    9 |   14
+ row9  | s_14 |    9 |   14
+(30 rows)
+
+SELECT * FROM pxf_hive_orc_multifile_vectorized ORDER BY t1;
+  t1   |  t2  | num1 | dub1
+-------+------+------+------
+ row1  | s_6  |    1 |    6
+ row1  | s_6  |    1 |    6
+ row1  | s_6  |    1 |    6
+ row10 | s_15 |   10 |   15
+ row10 | s_15 |   10 |   15
+ row10 | s_15 |   10 |   15
+ row2  | s_7  |    2 |    7
+ row2  | s_7  |    2 |    7
+ row2  | s_7  |    2 |    7
+ row3  | s_8  |    3 |    8
+ row3  | s_8  |    3 |    8
+ row3  | s_8  |    3 |    8
+ row4  | s_9  |    4 |    9
+ row4  | s_9  |    4 |    9
+ row4  | s_9  |    4 |    9
+ row5  | s_10 |    5 |   10
+ row5  | s_10 |    5 |   10
+ row5  | s_10 |    5 |   10
+ row6  | s_11 |    6 |   11
+ row6  | s_11 |    6 |   11
+ row6  | s_11 |    6 |   11
+ row7  | s_12 |    7 |   12
+ row7  | s_12 |    7 |   12
+ row7  | s_12 |    7 |   12
+ row8  | s_13 |    8 |   13
+ row8  | s_13 |    8 |   13
+ row8  | s_13 |    8 |   13
+ row9  | s_14 |    9 |   14
+ row9  | s_14 |    9 |   14
+ row9  | s_14 |    9 |   14
+(30 rows)
+
+SELECT * FROM pxf_hive_orc_multifile_vectorized ORDER BY t1;
+  t1   |  t2  | num1 | dub1
+-------+------+------+------
+ row1  | s_6  |    1 |    6
+ row1  | s_6  |    1 |    6
+ row1  | s_6  |    1 |    6
+ row10 | s_15 |   10 |   15
+ row10 | s_15 |   10 |   15
+ row10 | s_15 |   10 |   15
+ row2  | s_7  |    2 |    7
+ row2  | s_7  |    2 |    7
+ row2  | s_7  |    2 |    7
+ row3  | s_8  |    3 |    8
+ row3  | s_8  |    3 |    8
+ row3  | s_8  |    3 |    8
+ row4  | s_9  |    4 |    9
+ row4  | s_9  |    4 |    9
+ row4  | s_9  |    4 |    9
+ row5  | s_10 |    5 |   10
+ row5  | s_10 |    5 |   10
+ row5  | s_10 |    5 |   10
+ row6  | s_11 |    6 |   11
+ row6  | s_11 |    6 |   11
+ row6  | s_11 |    6 |   11
+ row7  | s_12 |    7 |   12
+ row7  | s_12 |    7 |   12
+ row7  | s_12 |    7 |   12
+ row8  | s_13 |    8 |   13
+ row8  | s_13 |    8 |   13
+ row8  | s_13 |    8 |   13
+ row9  | s_14 |    9 |   14
+ row9  | s_14 |    9 |   14
+ row9  | s_14 |    9 |   14
+(30 rows)
+
+SELECT * FROM pxf_hive_orc_multifile_vectorized ORDER BY t1;
+  t1   |  t2  | num1 | dub1
+-------+------+------+------
+ row1  | s_6  |    1 |    6
+ row1  | s_6  |    1 |    6
+ row1  | s_6  |    1 |    6
+ row10 | s_15 |   10 |   15
+ row10 | s_15 |   10 |   15
+ row10 | s_15 |   10 |   15
+ row2  | s_7  |    2 |    7
+ row2  | s_7  |    2 |    7
+ row2  | s_7  |    2 |    7
+ row3  | s_8  |    3 |    8
+ row3  | s_8  |    3 |    8
+ row3  | s_8  |    3 |    8
+ row4  | s_9  |    4 |    9
+ row4  | s_9  |    4 |    9
+ row4  | s_9  |    4 |    9
+ row5  | s_10 |    5 |   10
+ row5  | s_10 |    5 |   10
+ row5  | s_10 |    5 |   10
+ row6  | s_11 |    6 |   11
+ row6  | s_11 |    6 |   11
+ row6  | s_11 |    6 |   11
+ row7  | s_12 |    7 |   12
+ row7  | s_12 |    7 |   12
+ row7  | s_12 |    7 |   12
+ row8  | s_13 |    8 |   13
+ row8  | s_13 |    8 |   13
+ row8  | s_13 |    8 |   13
+ row9  | s_14 |    9 |   14
+ row9  | s_14 |    9 |   14
+ row9  | s_14 |    9 |   14
+(30 rows)
+
+SELECT * FROM pxf_hive_orc_multifile_vectorized ORDER BY t1;
+  t1   |  t2  | num1 | dub1
+-------+------+------+------
+ row1  | s_6  |    1 |    6
+ row1  | s_6  |    1 |    6
+ row1  | s_6  |    1 |    6
+ row10 | s_15 |   10 |   15
+ row10 | s_15 |   10 |   15
+ row10 | s_15 |   10 |   15
+ row2  | s_7  |    2 |    7
+ row2  | s_7  |    2 |    7
+ row2  | s_7  |    2 |    7
+ row3  | s_8  |    3 |    8
+ row3  | s_8  |    3 |    8
+ row3  | s_8  |    3 |    8
+ row4  | s_9  |    4 |    9
+ row4  | s_9  |    4 |    9
+ row4  | s_9  |    4 |    9
+ row5  | s_10 |    5 |   10
+ row5  | s_10 |    5 |   10
+ row5  | s_10 |    5 |   10
+ row6  | s_11 |    6 |   11
+ row6  | s_11 |    6 |   11
+ row6  | s_11 |    6 |   11
+ row7  | s_12 |    7 |   12
+ row7  | s_12 |    7 |   12
+ row7  | s_12 |    7 |   12
+ row8  | s_13 |    8 |   13
+ row8  | s_13 |    8 |   13
+ row8  | s_13 |    8 |   13
+ row9  | s_14 |    9 |   14
+ row9  | s_14 |    9 |   14
+ row9  | s_14 |    9 |   14
+(30 rows)
+
+SELECT * FROM pxf_hive_orc_multifile_vectorized ORDER BY t1;
+  t1   |  t2  | num1 | dub1
+-------+------+------+------
+ row1  | s_6  |    1 |    6
+ row1  | s_6  |    1 |    6
+ row1  | s_6  |    1 |    6
+ row10 | s_15 |   10 |   15
+ row10 | s_15 |   10 |   15
+ row10 | s_15 |   10 |   15
+ row2  | s_7  |    2 |    7
+ row2  | s_7  |    2 |    7
+ row2  | s_7  |    2 |    7
+ row3  | s_8  |    3 |    8
+ row3  | s_8  |    3 |    8
+ row3  | s_8  |    3 |    8
+ row4  | s_9  |    4 |    9
+ row4  | s_9  |    4 |    9
+ row4  | s_9  |    4 |    9
+ row5  | s_10 |    5 |   10
+ row5  | s_10 |    5 |   10
+ row5  | s_10 |    5 |   10
+ row6  | s_11 |    6 |   11
+ row6  | s_11 |    6 |   11
+ row6  | s_11 |    6 |   11
+ row7  | s_12 |    7 |   12
+ row7  | s_12 |    7 |   12
+ row7  | s_12 |    7 |   12
+ row8  | s_13 |    8 |   13
+ row8  | s_13 |    8 |   13
+ row8  | s_13 |    8 |   13
+ row9  | s_14 |    9 |   14
+ row9  | s_14 |    9 |   14
+ row9  | s_14 |    9 |   14
+(30 rows)
+
+SELECT * FROM pxf_hive_orc_multifile_vectorized ORDER BY t1;
+  t1   |  t2  | num1 | dub1
+-------+------+------+------
+ row1  | s_6  |    1 |    6
+ row1  | s_6  |    1 |    6
+ row1  | s_6  |    1 |    6
+ row10 | s_15 |   10 |   15
+ row10 | s_15 |   10 |   15
+ row10 | s_15 |   10 |   15
+ row2  | s_7  |    2 |    7
+ row2  | s_7  |    2 |    7
+ row2  | s_7  |    2 |    7
+ row3  | s_8  |    3 |    8
+ row3  | s_8  |    3 |    8
+ row3  | s_8  |    3 |    8
+ row4  | s_9  |    4 |    9
+ row4  | s_9  |    4 |    9
+ row4  | s_9  |    4 |    9
+ row5  | s_10 |    5 |   10
+ row5  | s_10 |    5 |   10
+ row5  | s_10 |    5 |   10
+ row6  | s_11 |    6 |   11
+ row6  | s_11 |    6 |   11
+ row6  | s_11 |    6 |   11
+ row7  | s_12 |    7 |   12
+ row7  | s_12 |    7 |   12
+ row7  | s_12 |    7 |   12
+ row8  | s_13 |    8 |   13
+ row8  | s_13 |    8 |   13
+ row8  | s_13 |    8 |   13
+ row9  | s_14 |    9 |   14
+ row9  | s_14 |    9 |   14
+ row9  | s_14 |    9 |   14
+(30 rows)
+
+SELECT * FROM pxf_hive_orc_multifile_vectorized ORDER BY t1;
+  t1   |  t2  | num1 | dub1
+-------+------+------+------
+ row1  | s_6  |    1 |    6
+ row1  | s_6  |    1 |    6
+ row1  | s_6  |    1 |    6
+ row10 | s_15 |   10 |   15
+ row10 | s_15 |   10 |   15
+ row10 | s_15 |   10 |   15
+ row2  | s_7  |    2 |    7
+ row2  | s_7  |    2 |    7
+ row2  | s_7  |    2 |    7
+ row3  | s_8  |    3 |    8
+ row3  | s_8  |    3 |    8
+ row3  | s_8  |    3 |    8
+ row4  | s_9  |    4 |    9
+ row4  | s_9  |    4 |    9
+ row4  | s_9  |    4 |    9
+ row5  | s_10 |    5 |   10
+ row5  | s_10 |    5 |   10
+ row5  | s_10 |    5 |   10
+ row6  | s_11 |    6 |   11
+ row6  | s_11 |    6 |   11
+ row6  | s_11 |    6 |   11
+ row7  | s_12 |    7 |   12
+ row7  | s_12 |    7 |   12
+ row7  | s_12 |    7 |   12
+ row8  | s_13 |    8 |   13
+ row8  | s_13 |    8 |   13
+ row8  | s_13 |    8 |   13
+ row9  | s_14 |    9 |   14
+ row9  | s_14 |    9 |   14
+ row9  | s_14 |    9 |   14
+(30 rows)
+
+SELECT * FROM pxf_hive_orc_multifile_vectorized ORDER BY t1;
+  t1   |  t2  | num1 | dub1
+-------+------+------+------
+ row1  | s_6  |    1 |    6
+ row1  | s_6  |    1 |    6
+ row1  | s_6  |    1 |    6
+ row10 | s_15 |   10 |   15
+ row10 | s_15 |   10 |   15
+ row10 | s_15 |   10 |   15
+ row2  | s_7  |    2 |    7
+ row2  | s_7  |    2 |    7
+ row2  | s_7  |    2 |    7
+ row3  | s_8  |    3 |    8
+ row3  | s_8  |    3 |    8
+ row3  | s_8  |    3 |    8
+ row4  | s_9  |    4 |    9
+ row4  | s_9  |    4 |    9
+ row4  | s_9  |    4 |    9
+ row5  | s_10 |    5 |   10
+ row5  | s_10 |    5 |   10
+ row5  | s_10 |    5 |   10
+ row6  | s_11 |    6 |   11
+ row6  | s_11 |    6 |   11
+ row6  | s_11 |    6 |   11
+ row7  | s_12 |    7 |   12
+ row7  | s_12 |    7 |   12
+ row7  | s_12 |    7 |   12
+ row8  | s_13 |    8 |   13
+ row8  | s_13 |    8 |   13
+ row8  | s_13 |    8 |   13
+ row9  | s_14 |    9 |   14
+ row9  | s_14 |    9 |   14
+ row9  | s_14 |    9 |   14
+(30 rows)
+
+SELECT * FROM pxf_hive_orc_multifile_vectorized ORDER BY t1;
+  t1   |  t2  | num1 | dub1
+-------+------+------+------
+ row1  | s_6  |    1 |    6
+ row1  | s_6  |    1 |    6
+ row1  | s_6  |    1 |    6
+ row10 | s_15 |   10 |   15
+ row10 | s_15 |   10 |   15
+ row10 | s_15 |   10 |   15
+ row2  | s_7  |    2 |    7
+ row2  | s_7  |    2 |    7
+ row2  | s_7  |    2 |    7
+ row3  | s_8  |    3 |    8
+ row3  | s_8  |    3 |    8
+ row3  | s_8  |    3 |    8
+ row4  | s_9  |    4 |    9
+ row4  | s_9  |    4 |    9
+ row4  | s_9  |    4 |    9
+ row5  | s_10 |    5 |   10
+ row5  | s_10 |    5 |   10
+ row5  | s_10 |    5 |   10
+ row6  | s_11 |    6 |   11
+ row6  | s_11 |    6 |   11
+ row6  | s_11 |    6 |   11
+ row7  | s_12 |    7 |   12
+ row7  | s_12 |    7 |   12
+ row7  | s_12 |    7 |   12
+ row8  | s_13 |    8 |   13
+ row8  | s_13 |    8 |   13
+ row8  | s_13 |    8 |   13
+ row9  | s_14 |    9 |   14
+ row9  | s_14 |    9 |   14
+ row9  | s_14 |    9 |   14
+(30 rows)
+

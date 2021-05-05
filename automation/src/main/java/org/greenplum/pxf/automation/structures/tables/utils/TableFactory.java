@@ -110,6 +110,36 @@ public abstract class TableFactory {
         return exTable;
     }
 
+    /**
+     * Prepares PXF Readable External Table for Hive ORC data using vectorized profile
+     *
+     * @param tableName external table name
+     * @param fields for external table
+     * @param hiveTable to direct to
+     * @param useProfile true to use Profile or false to use Fragmenter Accessor
+     *            Resolver
+     * @return PXF Readable External Table using "HiveVectorizedORC" profile
+     */
+    public static ReadableExternalTable getPxfHiveVectorizedOrcReadableTable(String tableName,
+                                                                   String[] fields,
+                                                                   HiveTable hiveTable,
+                                                                   boolean useProfile) {
+
+        ReadableExternalTable exTable = new ReadableExternalTable(tableName,
+                fields, hiveTable.getName(), "CUSTOM");
+
+        if (useProfile) {
+            exTable.setProfile("HiveVectorizedORC");
+        } else {
+            exTable.setFragmenter("org.greenplum.pxf.plugins.hive.HiveInputFormatFragmenter");
+            exTable.setAccessor("org.greenplum.pxf.plugins.hive.HiveORCVectorizedAccessor");
+            exTable.setResolver("org.greenplum.pxf.plugins.hive.HiveORCVectorizedResolver");
+        }
+        exTable.setFormatter("pxfwritable_import");
+
+        return exTable;
+    }
+
     public static void main(String[] args) {
         HiveTable t = new HiveTable("bin_data", null);
         ReadableExternalTable a = getPxfHiveRcReadableTable("hive_bin",

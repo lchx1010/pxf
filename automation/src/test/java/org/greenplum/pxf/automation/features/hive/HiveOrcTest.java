@@ -24,6 +24,12 @@ public class HiveOrcTest extends HiveBaseTest {
         createTable(exTable);
     }
 
+    protected void createExternalVectorizedTable(String tableName, String[] fields, HiveTable hiveTable) throws Exception {
+
+        exTable = TableFactory.getPxfHiveVectorizedOrcReadableTable(tableName, fields, hiveTable, true);
+        createTable(exTable);
+    }
+
     @Override
     void prepareData() throws Exception {
 
@@ -244,6 +250,34 @@ public class HiveOrcTest extends HiveBaseTest {
 
         runTincTest("pxf.features.hive.orc_zlib.runTest");
         runTincTest("pxf.features.hcatalog.hive_orc_zlib.runTest");
+    }
+
+    /**
+     * PXF on Hive ORC format with multiple ORC backing files
+     *
+     * @throws Exception if test fails to run
+     */
+    @Test(groups = { "hive", "hcatalog", "features", "gpdb", "security" })
+    public void storeAsOrcMultiFile() throws Exception {
+
+        prepareOrcMultiFileData();
+        createExternalTable(PXF_HIVE_ORC_MULTIFILE_TABLE, PXF_HIVE_SMALLDATA_COLS, hiveOrcMultiFileTable);
+
+        runTincTest("pxf.features.hive.orc_multifile.runTest");
+    }
+
+    /**
+     * PXF with HiveVectorizedORC deprecated profile on Hive ORC format with multiple ORC backing files
+     *
+     * @throws Exception if test fails to run
+     */
+    @Test(groups = { "hive", "hcatalog", "features", "gpdb", "security" })
+    public void storeAsOrcMultiFileGetVectorized() throws Exception {
+
+        prepareOrcMultiFileData();
+        createExternalVectorizedTable(PXF_HIVE_ORC_MULTIFILE_VECTORIZED_TABLE, PXF_HIVE_SMALLDATA_COLS, hiveOrcMultiFileTable);
+
+        runTincTest("pxf.features.hive.orc_multifile_vectorized.runTest");
     }
 
     /**

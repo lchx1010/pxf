@@ -307,8 +307,7 @@ public class HiveDataFragmenter extends HdfsDataFragmenter {
             fragmenterForProfile = context.getFragmenter();
         }
 
-        FileInputFormat.setInputPaths(jobConf, new Path(
-                tablePartition.storageDesc.getLocation()));
+        FileInputFormat.setInputPaths(jobConf, new Path(tablePartition.storageDesc.getLocation()));
 
         InputSplit[] splits;
         try {
@@ -318,6 +317,10 @@ public class HiveDataFragmenter extends HdfsDataFragmenter {
             return;
         }
 
+        // the same properties object will be reused by all fragments (splits) for a given partition
+        // or the whole table if it is not partitioned. This is to avoid excessive memory consumption
+        // when there are a lot of splits (files) backing up the Hive table (partition).
+        // Care must be taken by fragment processors to not modify this object or make a clone of it, if needed.
         Properties properties = hiveClientWrapper.buildFragmentProperties(fragmenterForProfile, tablePartition);
         for (InputSplit split : splits) {
             FileSplit fileSplit = (FileSplit) split;

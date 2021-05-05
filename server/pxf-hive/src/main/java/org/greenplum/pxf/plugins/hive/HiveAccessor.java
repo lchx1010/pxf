@@ -235,7 +235,9 @@ public class HiveAccessor extends HdfsSplittableDataAccessor {
         Properties properties;
         try {
             HiveFragmentMetadata metadata = context.getFragmentMetadata();
-            properties = metadata.getProperties();
+            // clone properties from the fragment metadata as they are shared across fragments and
+            // properties for the current fragment will be modified by Hive Resolvers and SerDe classes
+            properties = (Properties) metadata.getProperties().clone();
             if (inputFormat == null) {
                 String inputFormatClassName = properties.getProperty(FILE_INPUT_FORMAT);
                 this.inputFormat = hiveUtilities.makeInputFormat(inputFormatClassName, jobConf);
