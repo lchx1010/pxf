@@ -277,11 +277,21 @@ public class ORCVectorizedResolver extends BasePlugin implements ReadVectorizedR
                 cachedBatch.add(new ArrayList<>(columnDescriptors.size()));
             }
         } else {
-            // Reset the internal lists
-            for (int i = 0; i < batchSize; i++) {
-                // clear does not reclaim back the internal arrays of the arraylists
-                // this is what we prefer
-                cachedBatch.get(i).clear();
+            // Need to be reallocated when batchSize is not equal to the size of the existing cacheBatch,
+            // otherwise we will read more rows which we do not expect.
+            if (batchSize != cachedBatch.size()){
+                cachedBatch = new ArrayList<>(batchSize);
+
+                for (int i = 0; i < batchSize; i++) {
+                    cachedBatch.add(new ArrayList<>(columnDescriptors.size()));
+                }
+            } else {
+                // Reset the internal lists
+                for (int i = 0; i < batchSize; i++) {
+                    // clear does not reclaim back the internal arrays of the arraylists
+                    // this is what we prefer
+                    cachedBatch.get(i).clear();
+                }
             }
         }
 
